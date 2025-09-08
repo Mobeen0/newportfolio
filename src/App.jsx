@@ -1,5 +1,7 @@
 import './App.css'
 import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+import Hero3D from './components/Hero3D.jsx'
 
 function Sidebar({ active, open, setOpen, theme, setTheme }) {
   const toggleTheme = () => setTheme((t) => (t === 'dark' ? 'light' : 'dark'))
@@ -36,11 +38,28 @@ function Sidebar({ active, open, setOpen, theme, setTheme }) {
 function Hero() {
   return (
     <header id="home" className="section hero" data-reveal="fade-up">
-      <h1>Hi, I'm <b>Muhammad Mobeen</b> <br/> an AI Developer</h1>
-      <p>Building AI products, agents, and scalable LLM systems.</p>
-      <div className="cta">
-        <a href="https://github.com/mobeen0" className="button" target="_blank" rel="noreferrer">View Projects</a>
-        <a href="mailto:muhammad.mobeen100@gmail.com?subject=Inquiry%20from%20portfolio&body=Hi%20Mobeen,%0A%0A" className="button alt">Get in touch</a>
+      <div className="hero-inner">
+        <div className="hero-copy">
+          <motion.h1
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut' }}
+          >
+            Hi, I'm <span className="gradient-text">Muhammad Mobeen</span> <br/> an AI Developer
+          </motion.h1>
+          <motion.p
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.1, ease: 'easeOut' }}
+          >
+            Building AI products, agents, and scalable LLM systems.
+          </motion.p>
+          <motion.div className="cta" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+            <a href="https://github.com/mobeen0" className="button" target="_blank" rel="noreferrer">View Projects</a>
+            <a href="mailto:muhammad.mobeen100@gmail.com?subject=Inquiry%20from%20portfolio&body=Hi%20Mobeen,%0A%0A" className="button alt">Get in touch</a>
+          </motion.div>
+        </div>
+        <Hero3D />
       </div>
     </header>
   )
@@ -49,7 +68,14 @@ function Hero() {
 function Section({ id, title, children }) {
   return (
     <section id={id} className="section">
-      <h2>{title}</h2>
+      <motion.h2
+        initial={{ opacity: 0, y: 12 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.6 }}
+        transition={{ duration: 0.5, ease: 'easeOut' }}
+      >
+        {title}
+      </motion.h2>
       {children}
     </section>
   )
@@ -151,14 +177,33 @@ function App() {
     }
   }, [])
 
+  useEffect(() => {
+    const container = document.querySelector('.hero-3d')
+    if (!container) return
+    const onScroll = () => {
+      const y = window.scrollY
+      const translate = Math.min(30, y * 0.05)
+      container.style.transform = `translateY(${translate}px)`
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+
   return (
     <>
       <Sidebar active={active} open={open} setOpen={setOpen} theme={theme} setTheme={setTheme} />
       <Hero />
       <Section id="projects" title="Featured Projects">
         <div className="grid" data-reveal="fade-up">
-          {PROJECTS.map((p) => (
-            <article key={p.id} className="card" data-reveal="fade-up">
+          {PROJECTS.map((p, idx) => (
+            <motion.article
+              key={p.id}
+              className="card"
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.3 }}
+              transition={{ duration: 0.5, ease: 'easeOut', delay: 0.05 * (idx % 6) }}
+            >
               <img src={p.image} alt="" className="card-img" />
               <div className="card-body">
                 <h3>{p.title}</h3>
@@ -172,15 +217,22 @@ function App() {
                   {p.code && <a className="button small alt" href={p.code} target="_blank" rel="noreferrer">Code</a>}
                 </div>
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
       </Section>
 
       <Section id="experience" title="Experience">
         <div className="roles" data-reveal="fade-up">
-          {ROLES.map((role) => (
-            <article key={role.id} className="card role">
+          {ROLES.map((role, idx) => (
+            <motion.article
+              key={role.id}
+              className="card role"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true, amount: 0.4 }}
+              transition={{ duration: 0.5, ease: 'easeOut', delay: 0.06 * (idx % 6) }}
+            >
               <div className="card-body">
                 <h3>{role.title}</h3>
                 <p className="muted">{role.company} · {role.period}</p>
@@ -190,31 +242,43 @@ function App() {
                   ))}
                 </ul>
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
       </Section>
 
       <Section id="skills" title="Skills">
         <div className="skill-groups" data-reveal="fade-up">
-          {Object.entries(SKILL_GROUPS).map(([group, skills]) => (
-            <article key={group} className="skill-card">
+          {Object.entries(SKILL_GROUPS).map(([group, skills], idx) => (
+            <motion.article
+              key={group}
+              className="skill-card"
+              initial={{ opacity: 0, y: 18, scale: 0.98 }}
+              whileInView={{ opacity: 1, y: 0, scale: 1 }}
+              viewport={{ once: true, amount: 0.35 }}
+              transition={{ duration: 0.45, ease: 'easeOut', delay: 0.05 * (idx % 6) }}
+            >
               <h3 className="skill-title">{group}</h3>
               <div className="skill-badges">
                 {skills.map((s) => (
                   <span key={s} className="badge">{s}</span>
                 ))}
               </div>
-            </article>
+            </motion.article>
           ))}
         </div>
       </Section>
 
       <Section id="contact" title="Contact">
-        <div className="contact" data-reveal="fade-up">
+        <motion.div className="contact" data-reveal="fade-up"
+          initial={{ opacity: 0, y: 16 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, amount: 0.6 }}
+          transition={{ duration: 0.5 }}
+        >
           <p className="muted">Prefer email? Reach me directly.</p>
           <a className="button" href="mailto:muhammad.mobeen100@gmail.com?subject=Inquiry%20from%20portfolio&body=Hi%20Mobeen,%0A%0A">Email me</a>
-        </div>
+        </motion.div>
       </Section>
 
       <Footer />
